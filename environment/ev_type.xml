@@ -1,0 +1,5 @@
+<routes>
+    <vType id="electric" accel="1.0" decel="1.5" sigma="0.5"
+           length="4.5" maxSpeed="30" color="blue" vClass="evehicle"
+           emissionClass="Energy"/>
+</routes>
