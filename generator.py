@@ -38,36 +38,67 @@ class TrafficGenerator:
 
 <additional>""", file=stations)
             
-            for counter, laneId in enumerate(self.laneIds):
+    #         for counter, laneId in enumerate(self.laneIds):
+    #             cost = np.rint(random.random()*(cost_upper_limit - cost_lower_limit) + cost_lower_limit)
+    #             power = np.rint(random.random()*(power_upper_limit - power_lower_limit) + power_lower_limit)
+    #             chargeDelay = np.rint(random.random()*(chargeDelay_upper_limit - chargeDelay_lower_limit) + chargeDelay_lower_limit)
+    #             print("""   <chargingStation id="cs_{}" lane="{}" startPos="300.00" endPos="400.00" power="{}" chargeDelay="{}">
+    #     <param key="cost" value="{}"/>
+    #     <param key="power" value="{}"/>
+    #     <param key="chargeDelay" value="{}"/>
+    # </chargingStation>""".format(counter, laneId, power, chargeDelay, cost, power, chargeDelay), file=stations)
+            for counter, (laneId, laneLength) in enumerate(self.laneIds):
+                startPos = max(10, laneLength * 0.3)  # Start 30% into the lane or at least 10m
+                endPos = min(laneLength - 10, laneLength * 0.7)  # End before lane length
                 cost = np.rint(random.random()*(cost_upper_limit - cost_lower_limit) + cost_lower_limit)
                 power = np.rint(random.random()*(power_upper_limit - power_lower_limit) + power_lower_limit)
                 chargeDelay = np.rint(random.random()*(chargeDelay_upper_limit - chargeDelay_lower_limit) + chargeDelay_lower_limit)
-                print("""   <chargingStation id="cs_{}" lane="{}" startPos="300.00" endPos="400.00" power="{}" chargeDelay="{}">
-        <param key="cost" value="{}"/>
-        <param key="power" value="{}"/>
-        <param key="chargeDelay" value="{}"/>
-    </chargingStation>""".format(counter, laneId, power, chargeDelay, cost, power, chargeDelay), file=stations)
+                if endPos <= startPos:
+                    continue  # Skip this lane if positions are invalid
+
+                print("""   <chargingStation id="cs_{}" lane="{}" startPos="{}" endPos="{}" power="{}" chargeDelay="{}">
+                <param key="cost" value="{}"/>
+                <param key="power" value="{}"/>
+                <param key="chargeDelay" value="{}"/>
+                </chargingStation>""".format(counter, laneId, startPos, endPos, power, chargeDelay, cost, power, chargeDelay), file=stations)
 
             print("</additional>", file=stations)
             
 
-    def _getLaneIds(self):
-        # Regular expression to match lane IDs
-        regex_pattern = r'id="([^"]+)"'
+    # def _getLaneIds(self):
+    #     # Regular expression to match lane IDs
+    #     regex_pattern = r'<lane id="([^"]+)"'
 
-        # Parse the XML file
+
+    #     # Parse the XML file
+    #     tree = ET.parse('./environment/my_grid.net.xml')
+    #     root = tree.getroot()
+
+    #     # Convert XML to string
+    #     xml_string = ET.tostring(root, encoding='utf8', method='xml')
+
+    #     xml_data = xml_string.decode('utf-8')
+
+    #     # Find all matches
+    #     lane_ids = re.findall(regex_pattern, xml_data)
+
+    #     return lane_ids
+    def _getLaneIds(self):
         tree = ET.parse('./environment/my_grid.net.xml')
         root = tree.getroot()
 
-        # Convert XML to string
-        xml_string = ET.tostring(root, encoding='utf8', method='xml')
+        lane_info = []
+        for edge in root.findall("edge"):
+            for lane in edge.findall("lane"):
+                lane_id = lane.get("id")
+                lane_length = float(lane.get("length", "0"))  # Get length, default to 0 if missing
+                if lane_length > 0:  # Only use valid lanes
+                    lane_info.append((lane_id, lane_length))
 
-        xml_data = xml_string.decode('utf-8')
+        return lane_info  # Returns list of (lane_id, lane_length) pairs
 
-        # Find all matches
-        lane_ids = re.findall(regex_pattern, xml_data)
+    
 
-        return lane_ids
 if __name__ == "__main__":
     trafficgen=TrafficGenerator(10,10)
     trafficgen.generate_chargingstationfile(5)

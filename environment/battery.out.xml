@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-02-12 22:30:44 by Eclipse SUMO GUI Version 1.21.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="my_grid.net.xml"/>
+        <route-files value="trips.trips.xml"/>
+        <additional-files value="ev_type.xml,new_charging.add.xml"/>
+    </input>
+
+    <output>
+        <battery-output value="battery.out.xml"/>
+        <battery-output.precision value="2"/>
+        <chargingstations-output value="chargingstations.out.xml"/>
+        <summary-output value="summary_100.xml"/>
+    </output>
+
+    <time>
+        <begin value="0"/>
+        <end value="1000"/>
+    </time>
+
+</sumoConfiguration>
