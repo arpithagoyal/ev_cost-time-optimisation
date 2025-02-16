@@ -13,7 +13,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras import layers, models, regularizers
 
 
-class TrainModel:
+class Brain:
     def __init__(self, num_layers, width, batch_size, learning_rate, input_dim, output_dim):
         self._input_dim = input_dim
         self._output_dim = output_dim

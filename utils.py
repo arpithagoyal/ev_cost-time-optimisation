@@ -19,6 +19,7 @@ def import_train_configuration(config_file):
     config['width_layers'] = content['model'].getint('width_layers')
     config['batch_size'] = content['model'].getint('batch_size')
     config['learning_rate'] = content['model'].getfloat('learning_rate')
+    config['maximum_explorattion'] = content['model'].getint('maximum_exploration')
     config['training_epochs'] = content['model'].getint('training_epochs')
     config['memory_size_min'] = content['memory'].getint('memory_size_min')
     config['memory_size_max'] = content['memory'].getint('memory_size_max')
