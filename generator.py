@@ -38,15 +38,6 @@ class TrafficGenerator:
 
 <additional>""", file=stations)
             
-    #         for counter, laneId in enumerate(self.laneIds):
-    #             cost = np.rint(random.random()*(cost_upper_limit - cost_lower_limit) + cost_lower_limit)
-    #             power = np.rint(random.random()*(power_upper_limit - power_lower_limit) + power_lower_limit)
-    #             chargeDelay = np.rint(random.random()*(chargeDelay_upper_limit - chargeDelay_lower_limit) + chargeDelay_lower_limit)
-    #             print("""   <chargingStation id="cs_{}" lane="{}" startPos="300.00" endPos="400.00" power="{}" chargeDelay="{}">
-    #     <param key="cost" value="{}"/>
-    #     <param key="power" value="{}"/>
-    #     <param key="chargeDelay" value="{}"/>
-    # </chargingStation>""".format(counter, laneId, power, chargeDelay, cost, power, chargeDelay), file=stations)
             for counter, (laneId, laneLength) in enumerate(self.laneIds):
                 startPos = max(10, laneLength * 0.3)  # Start 30% into the lane or at least 10m
                 endPos = min(laneLength - 10, laneLength * 0.7)  # End before lane length

@@ -20,7 +20,7 @@ class Agent:
         self.action_size = config['num_actions']
         self.bee_index = bee_index
         self.learning_rate = config['learning_rate']
-        self.gamma = 0.95
+        self.gamma = 0.99
         self.brain = Brain(config['num_layers'], 
                     config['width_layers'], 
                     config['batch_size'], 
@@ -58,18 +58,21 @@ class Agent:
             states = np.array([val[0] for val in batch])  # extract states from the batch
             next_states = np.array([val[3] for val in batch])  # extract next states from the batch
 
-            q_s_a = self.brain.predict_batch(states)  # predict Q(state), for every sample
-            q_s_a_d = self.brain.predict_batch(next_states)  # predict Q(next_state), for every sample
-
+            p = self.brain.predict_batch(states)  # predict Q(state), for every sample
+            p_ = self.brain.predict_batch(next_states)  # predict Q(next_state), for every sample
+            pTarget_=self.brain.predict_batch(next_states,target=True)
             x = np.zeros((len(batch), self._num_states))
             y = np.zeros((len(batch), self._num_actions))
             for i, b in enumerate(batch):
                 state, action, reward, _ = b[0], b[1][self.bee_index], b[2], b[3] 
-                current_q = q_s_a[i]  # get the Q(state) predicted before
-                current_q[action] = reward + self.gamma * np.amax(q_s_a_d[i])
+                current_q = p[i]  # get the Q(state) predicted before
+                current_q[action] = reward + self.gamma * pTarget_[i][np.argmax(p_[i])]
                 x[i] = state
                 y[i] = current_q  
             scaler = StandardScaler()
             x = scaler.fit_transform(x)
             y = scaler.fit_transform(y)
             self.brain.train_batch(x, y)
+
+    def update_target_model(self):
+        self.brain.update_target_model()

@@ -20,6 +20,7 @@ class Brain:
         self._batch_size = batch_size
         self._learning_rate = learning_rate
         self._model = self._build_model(num_layers, width)
+        self._target_model=self._build_model(num_layers,width)
 
 
     def _build_model(self, num_layers, width):
@@ -35,19 +36,26 @@ class Brain:
         model = keras.Model(inputs=inputs, outputs=outputs, name='my_model')
         model.compile(loss=losses.MeanSquaredError, optimizer=Adam(learning_rate=self._learning_rate))
         return model
-    def predict_one(self, state):
+    
+    def predict_one(self, state,target=False):
         """
         Predict the action values from a single state
         """
         state = np.reshape(state, [1, self._input_dim])
-        return self._model.predict(state)
+        if target:
+            return self._target_model.predict(state)
+        else:
+            return self._model.predict(state)
 
 
-    def predict_batch(self, states):
+    def predict_batch(self, states, target=False):
         """
         Predict the action values from a batch of states
         """
-        return self._model.predict(states)
+        if(target):
+            return self._target_model.predict(states)
+        else:
+            return self._model.predict(states)
 
 
     def train_batch(self, states, q_sa):
@@ -57,12 +65,11 @@ class Brain:
         self._model.fit(states, q_sa, epochs=1, verbose=1)
 
 
-    def save_model(self, path):
-        """
-        Save the current model in the folder as h5 file and a model architecture summary as png
-        """
-        self._model.save(os.path.join(path, 'trained_model.h5'))
-        plot_model(self._model, to_file=os.path.join(path, 'model_structure.png'), show_shapes=True, show_layer_names=True)
+    def update_target_model(self):
+        self._target_model.set_weights(self.model.get_weights())
+
+    def save_model(self):
+        self._model.save(self.weight_backup)
 
 
     @property
