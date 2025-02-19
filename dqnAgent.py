@@ -38,7 +38,7 @@ class Agent:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
         else:
-            return np.argmax(self.brain.predict_one_sample(state))
+            return np.argmax(self.brain.predict_one(state))
     
     def observe(self, sample):
         self.memory.add_sample(sample)
